@@ -4,11 +4,7 @@ from starlette.middleware.cors import CORSMiddleware
 from .config import api_server_config
 from .router_v1 import router_v1
 
-origins = [
-    "http://localhost",
-    f"http://localhost:{api_server_config.port}",
-    f"http://{api_server_config.host}:{api_server_config.port}",
-]
+origins = ["*"]
 
 SERVICE_TITLE = "Image Generator Service API"
 SERVICE_DESCRIPTION = """Image generating by text description"""
