@@ -1,0 +1,14 @@
+.idea/
+__pycache__/
+venv
+.env
+*.pyc
+*.egg
+*.txt
+!requirements.txt
+*.json
+*.db
+*.png
+*.jpg
+*.jpeg
+*.log
