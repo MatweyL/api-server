@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from .config import api_server_config
 from .router_v1 import router_v1
 
 origins = ["*"]

@@ -12,8 +12,8 @@ class InputTaskGeneration(BaseModel):
 class InputTaskVideoPreviewGeneration(InputTaskGeneration):
     task_type: TaskType = TaskType.VIDEO_PREVIEW_GENERATION
     video_url: str
-    video_text: Optional[str]
     video_author_comments: Optional[str]
+    tags: Optional[str]
 
 
 class InputTaskAvatarGeneration(InputTaskGeneration):

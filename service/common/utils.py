@@ -10,5 +10,5 @@ def get_env_path():
     return os.path.join(get_project_root(), ".env")
 
 
-def get_db_url(host: str, port: int, user: str, password: str, db_name: str):
-    return f'postgresql://{user}:{password}@{host}:{port}/{db_name}'
+def get_db_url(driver: str, host: str, port: int, user: str, password: str, db_name: str):
+    return f'{driver}+asyncpg://{user}:{password}@{host}:{port}/{db_name}'

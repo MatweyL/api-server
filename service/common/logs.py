@@ -1,6 +1,6 @@
 import logging.config
 
-from .config import base_service_config
+from .config import log_config
 
 LOGGER_NAME = "service_logger"
 
@@ -52,7 +52,7 @@ LOG_CONFIG = {
     "loggers": {
         LOGGER_NAME: {
             "handlers": ["stream_handler"],
-            "level": base_service_config.log_level,
+            "level": log_config.log_level,
         }
     }
 }
