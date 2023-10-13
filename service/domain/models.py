@@ -9,7 +9,6 @@ class TaskGenerationModel(Base):
     task_uid = Column(VARCHAR(64), primary_key=True, index=True)
     task_status = Column(VARCHAR(64), nullable=False)
     task_type = Column(VARCHAR(64), nullable=False)
-    task_images = relationship('TaskImageModel', viewonly=True)
 
 
 class TaskImageModel(Base):
@@ -17,7 +16,6 @@ class TaskImageModel(Base):
     image_uid = Column(VARCHAR(64), primary_key=True)
     image_url = Column(VARCHAR(128), nullable=False)
     task_uid = Column(VARCHAR(64), ForeignKey('task_generation.task_uid'), index=True)
-    task = relationship('TaskGenerationModel', viewonly=True)
 
 
 class TaskVideoPreviewGenerationModel(Base):
