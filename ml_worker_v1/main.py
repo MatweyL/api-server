@@ -1,17 +1,17 @@
 import asyncio
 
 from ml_worker_v1.core.minio_uploader import minio_uploader_config
-from ml_worker_v1.core.rabbit_producer import rabbit_producer_config
 from ml_worker_v1.core.rabbit_consumer import rabbit_consumer_config
+from ml_worker_v1.core.rabbit_producer import rabbit_producer_config
 from ml_worker_v1.core.task_consumer import TaskGenerationConsumer
+from ml_worker_v1.v1.worker import V1Worker
 from server.adapters.inbound.consumer.rabbit import RabbitConsumer
 from server.adapters.outbound.producer.rabbit import RabbitProducer
 from server.adapters.outbound.s3_uploader.minio_uploader import MinioUploader
 from server.common.logs import logger
-from server.domain.tasks.task_producer import TaskGenerationProducer
 from server.domain.config import task_producer_config as task_consumer_config
 from server.domain.config import task_updates_consumer_config as task_producer_config
-from ml_worker_v1.v1.worker import Worker
+from server.domain.tasks.task_producer import TaskGenerationProducer
 
 
 async def main():
@@ -34,7 +34,11 @@ async def main():
                                    minio_uploader_config.before_retry_timeout_s)
 
     task_video_preview_producer = TaskGenerationProducer(rabbit_producer, task_producer_config.video_preview_queue_name)
-    worker_video_preview = Worker(minio_uploader, task_video_preview_producer, minio_uploader_config.bucket_name)
+    task_avatar_producer = TaskGenerationProducer(rabbit_producer, task_producer_config.avatar_queue_name)
+    task_channel_banner_producer = TaskGenerationProducer(rabbit_producer,
+                                                          task_producer_config.channel_banner_queue_name)
+    worker_video_preview = V1Worker(minio_uploader, task_video_preview_producer, task_avatar_producer,
+                                    task_channel_banner_producer, minio_uploader_config.bucket_name)
 
     task_video_preview_consumer = TaskGenerationConsumer(rabbit_consumer,
                                                          task_consumer_config.video_preview_queue_name,

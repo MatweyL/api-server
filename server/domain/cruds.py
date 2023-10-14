@@ -4,8 +4,10 @@ from sqlalchemy import update, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from server.domain.utils import map_schema_to_model, map_model_to_schema, map_model_with_existing_schema
-from server.domain.models import TaskGenerationModel, TaskVideoPreviewGenerationModel, TaskImageModel
-from server.domain.schemas import TaskStatus, TaskGeneration, TaskVideoPreviewGeneration, TaskImage
+from server.domain.models import TaskGenerationModel, TaskVideoPreviewGenerationModel, TaskImageModel, \
+    TaskAvatarGenerationModel, TaskChannelBannerGenerationModel
+from server.domain.schemas import TaskStatus, TaskGeneration, TaskVideoPreviewGeneration, TaskImage, \
+    TaskAvatarGeneration, TaskChannelBannerGeneration
 
 
 class TaskGenerationCRUD:
@@ -35,14 +37,13 @@ class TaskVideoPreviewGenerationCRUD:
 
     @staticmethod
     async def create(task_schema: TaskVideoPreviewGeneration, session: AsyncSession):
-
         task = map_schema_to_model(task_schema, TaskVideoPreviewGenerationModel)
         session.add(task)
 
     @staticmethod
     async def get(task_uid: str, session: AsyncSession) -> TaskVideoPreviewGeneration:
         task_generation = await TaskGenerationCRUD.get(task_uid, session)
-        select_stmt = select(TaskVideoPreviewGenerationModel)\
+        select_stmt = select(TaskVideoPreviewGenerationModel) \
             .where(TaskVideoPreviewGenerationModel.task_uid == task_uid)
         task_video_preview_generation_model = (await session.execute(select_stmt)).scalar_one_or_none()
         task_video_preview_generation_schema = map_model_with_existing_schema(task_video_preview_generation_model,
@@ -68,3 +69,41 @@ class TaskImageCRUD:
                                for task_image in tasks_images]
         for task_image_model in tasks_images_models:
             session.add(task_image_model)
+
+
+class TaskAvatarGenerationCRUD:
+
+    @staticmethod
+    async def create(task_schema: TaskAvatarGeneration, session: AsyncSession):
+        task = map_schema_to_model(task_schema, TaskAvatarGeneration)
+        session.add(task)
+
+    @staticmethod
+    async def get(task_uid: str, session: AsyncSession) -> TaskAvatarGeneration:
+        task_generation = await TaskGenerationCRUD.get(task_uid, session)
+        select_stmt = select(TaskAvatarGenerationModel) \
+            .where(TaskAvatarGenerationModel.task_uid == task_uid)
+        task_avatar_generation_model = (await session.execute(select_stmt)).scalar_one_or_none()
+        task_avatar_generation_schema = map_model_with_existing_schema(task_avatar_generation_model,
+                                                                       task_generation,
+                                                                       TaskAvatarGeneration)
+        return task_avatar_generation_schema
+
+
+class TaskChannelBannerGenerationCRUD:
+
+    @staticmethod
+    async def create(task_schema: TaskChannelBannerGeneration, session: AsyncSession):
+        task = map_schema_to_model(task_schema, TaskChannelBannerGenerationModel)
+        session.add(task)
+
+    @staticmethod
+    async def get(task_uid: str, session: AsyncSession) -> TaskChannelBannerGeneration:
+        task_generation = await TaskGenerationCRUD.get(task_uid, session)
+        select_stmt = select(TaskChannelBannerGenerationModel) \
+            .where(TaskChannelBannerGenerationModel.task_uid == task_uid)
+        task_channel_banner_generation_model = (await session.execute(select_stmt)).scalar_one_or_none()
+        task_channel_banner_generation_schema = map_model_with_existing_schema(task_channel_banner_generation_model,
+                                                                               task_generation,
+                                                                               TaskChannelBannerGenerationModel)
+        return task_channel_banner_generation_schema

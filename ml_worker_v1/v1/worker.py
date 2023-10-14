@@ -1,52 +1,34 @@
 from io import BytesIO
 from typing import List
 
-from ml_worker_v1.core.worker import WorkerInterface
-from server.adapters.outbound.s3_uploader.minio_uploader import MinioUploader
-from server.domain.schemas import TaskGeneration, TaskType, TaskVideoPreviewGeneration, TaskAvatarGeneration, \
-    TaskChannelBannerGeneration, TaskStatus, TaskImage
-from server.domain.tasks.task_producer import TaskGenerationProducer
-from server.domain.utils import generate_uid
+from ml_worker_v1.core.worker import AbstractWorker
+from ml_worker_v1.v1.RutubeCase import generate_video_preview
+from server.domain.schemas import TaskVideoPreviewGeneration, TaskAvatarGeneration, \
+    TaskChannelBannerGeneration
 
 
-class Worker(WorkerInterface):
-
-    def __init__(self, uploader: MinioUploader,
-                 task_video_preview_producer: TaskGenerationProducer,
-                 bucket_name: str):
-        self._uploader = uploader
-        self._task_video_preview_producer = task_video_preview_producer
-        self._task_type_generation_methods = {
-            TaskType.VIDEO_PREVIEW_GENERATION: self.generate_video_preview,
-            TaskType.AVATAR_GENERATION: self.generate_avatar,
-            TaskType.CHANNEL_BANNER_GENERATION: self.generate_channel_banner
-        }
-        self._bucket_name = bucket_name
-
-    async def generate(self, task: TaskGeneration):
-        task.task_status = TaskStatus.GENERATION_RUNNING
-        await self._task_video_preview_producer.produce(task)
-        images_bytes: List[BytesIO] = self._task_type_generation_methods[task.task_type](task)
-        images = []
-        for image_bytes in images_bytes:
-            image_uid = generate_uid()
-            uploading_response = await self._uploader.upload(self._bucket_name, image_uid, image_bytes)
-            image = TaskImage(image_uid=image_uid,
-                              image_url=uploading_response.image_url,
-                              task_uid=task.task_uid)
-            images.append(image)
-        task.task_status = TaskStatus.GENERATION_FINISHED
-        task.task_images = images
-        await self._task_video_preview_producer.produce(task)
+class MockWorker(AbstractWorker):
 
     def generate_video_preview(self, task: TaskVideoPreviewGeneration) -> List[BytesIO]:
         return [get_bytes_io()]
 
     def generate_avatar(self, task: TaskAvatarGeneration) -> List[BytesIO]:
-        return []
+        return [get_bytes_io()]
 
     def generate_channel_banner(self, task: TaskChannelBannerGeneration) -> List[BytesIO]:
-        return []
+        return [get_bytes_io()]
+
+
+class V1Worker(AbstractWorker):
+
+    def generate_video_preview(self, task: TaskVideoPreviewGeneration) -> List[BytesIO]:
+        return [BytesIO(img_bytes) for img_bytes in generate_video_preview(None, task.video_author_comments, task.tags)]
+
+    def generate_avatar(self, task: TaskAvatarGeneration) -> List[BytesIO]:
+        pass
+
+    def generate_channel_banner(self, task: TaskChannelBannerGeneration) -> List[BytesIO]:
+        pass
 
 
 def get_bytes_io():
