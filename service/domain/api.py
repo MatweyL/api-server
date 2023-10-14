@@ -4,7 +4,9 @@ from typing import Union
 from fastapi import APIRouter, HTTPException
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
+from service.adapters.inbound.consumer.conifg import rabbit_consumer_config
 from service.adapters.inbound.consumer.mock import RabbitConsumerMock
+from service.adapters.inbound.consumer.rabbit import RabbitConsumer
 from service.adapters.outbound.producer.conifg import rabbit_producer_config
 from service.adapters.outbound.producer.rabbit import RabbitProducer
 from service.common.config import db_config
@@ -32,7 +34,12 @@ rabbit_producer = RabbitProducer(rabbit_producer_config.protocol,
                                  rabbit_producer_config.virtual_host,
                                  rabbit_producer_config.exchange_name,
                                  rabbit_producer_config.exchange_type, )
-rabbit_consumer = RabbitConsumerMock()
+rabbit_consumer = RabbitConsumer(rabbit_consumer_config.protocol,
+                                 rabbit_consumer_config.user,
+                                 rabbit_consumer_config.password,
+                                 rabbit_consumer_config.host,
+                                 rabbit_consumer_config.port,
+                                 rabbit_consumer_config.virtual_host, )
 task_video_preview_generation_producer = TaskGenerationProducer(rabbit_producer,
                                                                 task_producer_config.video_preview_queue_name)
 task_video_preview_gs = TaskVideoPreviewGenerationService(task_video_preview_generation_producer)
@@ -99,3 +106,4 @@ async def startup():
 @router_tasks.on_event('shutdown')
 async def shutdown():
     await rabbit_producer.stop()
+    await rabbit_consumer.stop()

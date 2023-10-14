@@ -1,5 +1,4 @@
 import asyncio
-from abc import abstractmethod
 from typing import Optional
 
 from aio_pika import Message, connect_robust
@@ -33,17 +32,18 @@ class RabbitProducer(RabbitProducerInterface):
         try:
             self._connection = await connect_robust(self._connection_url)
         except BaseException as e:
-            logger.warning(f'cannot create connection: {e}; sleep {self._reconnect_timeout_s} s and retry')
+            logger.warning(f'{self} cannot create connection: {e}; sleep {self._reconnect_timeout_s} s and retry')
             await asyncio.sleep(self._reconnect_timeout_s)
             return await self.start()
         else:
             channel = await self._connection.channel()
             self._exchange = await channel.declare_exchange(self._exchange_name, self._exchange_type)
-            logger.info(f'started')
+            logger.info(f'{self} started')
 
     async def stop(self):
         if not self._connection.is_closed:
             await self._connection.close()
+        logger.info(f'{self} stopped')
 
     async def produce(self, body: bytes, correlation_id: str, routing_key: str):
         current_retry = 0
@@ -53,10 +53,11 @@ class RabbitProducer(RabbitProducerInterface):
                                                      correlation_id=correlation_id,),
                                              routing_key=routing_key)
             except BaseException as e:
-                logger.error(f'retry: [{current_retry}|{self._produce_max_retries}]; '
+                logger.error(f'{self} retry: [{current_retry}|{self._produce_max_retries}]; '
                              f'got exception while data producing: {e}')
                 logger.exception(e)
                 current_retry += 1
             else:
+                logger.debug(f'{self} successfully produced task to {routing_key}')
                 break
 
