@@ -1,8 +1,11 @@
 import asyncio
+from abc import abstractmethod
 from typing import Optional
 
 from aio_pika import Message, connect_robust
 from aio_pika.abc import AbstractExchange, AbstractConnection
+
+from service.ports.outbound import RabbitProducerInterface
 from .utils import _build_connection_url
 
 try:
@@ -13,7 +16,7 @@ except ImportError:
     logger.warning('failed to import project logger; use default logging')
 
 
-class RabbitProducer:
+class RabbitProducer(RabbitProducerInterface):
 
     def __init__(self, protocol: str, user: str, password: str, host: str, port: str, virtual_host: str,
                  exchange_name: str, exchange_type: str, ):

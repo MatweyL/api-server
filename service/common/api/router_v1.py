@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from service.domain.main import router_tasks
+from service.domain.api import router_tasks
 
 router_v1 = APIRouter(prefix="/v1", tags=["API version 1"])
 

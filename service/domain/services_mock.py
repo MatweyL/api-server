@@ -3,7 +3,7 @@ from random import randint, choices
 from typing import Dict, Type, Optional
 
 from service.domain.schemas import InputTaskGeneration, TaskStatus, TaskType
-from service.domain.schemas.service import TaskGeneration, TaskAvatarGeneration, TaskVideoPreviewGeneration, \
+from service.domain.schemas.main import TaskGeneration, TaskAvatarGeneration, TaskVideoPreviewGeneration, \
     TaskChannelBannerGeneration
 from service.domain.utils import generate_uid
 
@@ -22,9 +22,6 @@ random_urls_list = [
 ]
 
 task_running_statuses = {
-    TaskStatus.TEXT_EXTRACTION_WAITING: TaskStatus.TEXT_EXTRACTION_RUNNING,
-    TaskStatus.TEXT_EXTRACTION_RUNNING: TaskStatus.TEXT_EXTRACTION_FINISHED,
-    TaskStatus.TEXT_EXTRACTION_FINISHED: TaskStatus.GENERATION_WAITING,
     TaskStatus.GENERATION_WAITING: TaskStatus.GENERATION_RUNNING,
     TaskStatus.GENERATION_RUNNING: TaskStatus.GENERATION_FINISHED
 }
@@ -42,10 +39,7 @@ class TaskGenerationServiceMock:
 
     def generate_task(self, input_task: InputTaskGeneration) -> TaskGeneration:
         uid = generate_uid()
-        if input_task.task_type == TaskType.VIDEO_PREVIEW_GENERATION:
-            status = TaskStatus.TEXT_EXTRACTION_WAITING
-        else:
-            status = TaskStatus.GENERATION_WAITING
+        status = TaskStatus.GENERATION_WAITING
         task = self._types_schemas[input_task.task_type](task_uid=uid, task_status=status, **input_task.model_dump(),
                                                          task_images_urls=[])
 

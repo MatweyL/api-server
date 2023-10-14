@@ -21,7 +21,6 @@ class TaskImageModel(Base):
 class TaskVideoPreviewGenerationModel(Base):
     __tablename__ = 'task_video_preview_generation'
     video_url = Column(VARCHAR(128), nullable=False)
-    video_text = Column(Text)
     video_author_comments = Column(Text)
     tags = Column(Text)
     task_uid = Column(VARCHAR(64), ForeignKey('task_generation.task_uid'), primary_key=True, index=True)

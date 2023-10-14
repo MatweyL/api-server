@@ -21,7 +21,6 @@ class TaskGeneration(BaseModel):
 class TaskVideoPreviewGeneration(TaskGeneration):
     task_type: TaskType = TaskType.VIDEO_PREVIEW_GENERATION
     video_url: str
-    video_text: Optional[str] = None
     video_author_comments: Optional[str] = None
     tags: Optional[str] = None
 

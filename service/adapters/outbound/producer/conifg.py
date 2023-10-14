@@ -17,4 +17,4 @@ class RabbitProducerConfig(BaseServiceConfig):
         env_prefix = 'rabbit_producer_'
 
 
-rabbit_error_producer_config = RabbitProducerConfig()
+rabbit_producer_config = RabbitProducerConfig()

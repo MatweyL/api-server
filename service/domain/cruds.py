@@ -1,11 +1,11 @@
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy import update, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from service.domain.converters import map_schema_to_model, map_model_to_schema, map_model_with_existing_schema
-from service.domain.models import TaskGenerationModel, TaskVideoPreviewGenerationModel
-from service.domain.schemas import TaskStatus, TaskGeneration, TaskVideoPreviewGeneration
+from service.domain.mappers import map_schema_to_model, map_model_to_schema, map_model_with_existing_schema
+from service.domain.models import TaskGenerationModel, TaskVideoPreviewGenerationModel, TaskImageModel
+from service.domain.schemas import TaskStatus, TaskGeneration, TaskVideoPreviewGeneration, TaskImage
 
 
 class TaskGenerationCRUD:
@@ -40,13 +40,6 @@ class TaskVideoPreviewGenerationCRUD:
         session.add(task)
 
     @staticmethod
-    async def update_video_text(task_uid: str, video_text: str, session: AsyncSession):
-        update_stmt = update(TaskVideoPreviewGenerationModel) \
-            .where(TaskVideoPreviewGenerationModel.task_uid == task_uid) \
-            .values(video_text=video_text)
-        await session.execute(update_stmt)
-
-    @staticmethod
     async def get(task_uid: str, session: AsyncSession) -> TaskVideoPreviewGeneration:
         task_generation = await TaskGenerationCRUD.get(task_uid, session)
         select_stmt = select(TaskVideoPreviewGenerationModel)\
@@ -56,3 +49,22 @@ class TaskVideoPreviewGenerationCRUD:
                                                                               task_generation,
                                                                               TaskVideoPreviewGeneration)
         return task_video_preview_generation_schema
+
+
+class TaskImageCRUD:
+
+    @staticmethod
+    async def get_all(task_uid: str, session: AsyncSession) -> List[TaskImage]:
+        select_stmt = select(TaskImageModel) \
+            .where(TaskImageModel.task_uid == task_uid)
+        tasks_images_models = (await session.execute(select_stmt)).scalars()
+        tasks_images_schemas = [map_model_to_schema(task_image_model, TaskImage)
+                                for task_image_model in tasks_images_models]
+        return tasks_images_schemas
+
+    @staticmethod
+    async def create_all(tasks_images: List[TaskImage], session: AsyncSession):
+        tasks_images_models = [map_schema_to_model(task_image, TaskImageModel)
+                               for task_image in tasks_images]
+        for task_image_model in tasks_images_models:
+            session.add(task_image_model)

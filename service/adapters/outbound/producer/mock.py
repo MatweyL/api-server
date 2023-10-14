@@ -1,16 +1,13 @@
-from abc import abstractmethod
+from service.ports.outbound import RabbitProducerInterface
 
 
-class RabbitProducerInterface:
+class RabbitProducerMock(RabbitProducerInterface):
 
-    @abstractmethod
     async def start(self):
         pass
 
-    @abstractmethod
     async def stop(self):
         pass
 
-    @abstractmethod
     async def produce(self, body: bytes, correlation_id: str, routing_key: str):
         pass
