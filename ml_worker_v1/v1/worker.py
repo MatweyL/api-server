@@ -28,21 +28,27 @@ class Worker(WorkerInterface):
         await self._task_video_preview_producer.produce(task)
         images_bytes: List[BytesIO] = self._task_type_generation_methods[task.task_type](task)
         images = []
-        for image_bytes in [images_bytes]:
+        for image_bytes in images_bytes:
             image_uid = generate_uid()
-            # uploading_response = await self._uploader.upload(self._bucket_name, image_uid, image_bytes)
+            uploading_response = await self._uploader.upload(self._bucket_name, image_uid, image_bytes)
             image = TaskImage(image_uid=image_uid,
-                              image_url='uploading_response.image_url',
+                              image_url=uploading_response.image_url,
                               task_uid=task.task_uid)
             images.append(image)
         task.task_status = TaskStatus.GENERATION_FINISHED
+        task.task_images = images
         await self._task_video_preview_producer.produce(task)
 
     def generate_video_preview(self, task: TaskVideoPreviewGeneration) -> List[BytesIO]:
-        return []
+        return [get_bytes_io()]
 
     def generate_avatar(self, task: TaskAvatarGeneration) -> List[BytesIO]:
         return []
 
     def generate_channel_banner(self, task: TaskChannelBannerGeneration) -> List[BytesIO]:
         return []
+
+
+def get_bytes_io():
+    with open(r'D:\Programming\hackatons\digital_sochi_2023\api_server\requirements.txt', 'rb') as txt_file:
+        return BytesIO(txt_file.read())

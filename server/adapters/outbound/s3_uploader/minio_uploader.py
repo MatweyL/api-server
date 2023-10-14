@@ -40,6 +40,7 @@ class MinioUploader:
             try:
                 await self._client.put_object(bucket_name, file_name, file, file_length)
             except (miniopy_async.error.S3Error, BaseException) as e:
+                logger.exception(e)
                 if isinstance(e, miniopy_async.error.S3Error) and e.code == "NoSuchBucket":
                     raise e
                 elif retries >= self._max_retries:
@@ -54,4 +55,4 @@ class MinioUploader:
         if not is_saved:
             logger.critical(f"data saving failed after {self._max_retries} retries")
         return UploadingResponse(success=is_saved,
-                                 image_url=os.path.join(self._host, bucket_name, file_name))
+                                 image_url=os.path.join(self._host, bucket_name, file_name).replace("\\", "/"))
