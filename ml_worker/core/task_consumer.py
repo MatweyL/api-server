@@ -1,5 +1,5 @@
-from ml_worker_v1.core.utils import task_type_schema_map
-from ml_worker_v1.core.worker import WorkerInterface
+from ml_worker.core.utils import task_type_schema_map
+from ml_worker.core.worker import WorkerInterface
 from server.common.logs import logger
 from server.domain.schemas import TaskGeneration
 from server.domain.tasks.task_updates_consumer import AbstractTaskGenerationConsumer

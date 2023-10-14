@@ -1,10 +1,10 @@
 import asyncio
 
-from ml_worker_v1.core.minio_uploader import minio_uploader_config
-from ml_worker_v1.core.rabbit_consumer import rabbit_consumer_config
-from ml_worker_v1.core.rabbit_producer import rabbit_producer_config
-from ml_worker_v1.core.task_consumer import TaskGenerationConsumer
-from ml_worker_v1.v1.worker import V1Worker
+from ml_worker.core.minio_uploader import minio_uploader_config
+from ml_worker.core.rabbit_consumer import rabbit_consumer_config
+from ml_worker.core.rabbit_producer import rabbit_producer_config
+from ml_worker.core.task_consumer import TaskGenerationConsumer
+from ml_worker.v0.worker import Worker
 from server.adapters.inbound.consumer.rabbit import RabbitConsumer
 from server.adapters.outbound.producer.rabbit import RabbitProducer
 from server.adapters.outbound.s3_uploader.minio_uploader import MinioUploader
@@ -37,8 +37,8 @@ async def main():
     task_avatar_producer = TaskGenerationProducer(rabbit_producer, task_producer_config.avatar_queue_name)
     task_channel_banner_producer = TaskGenerationProducer(rabbit_producer,
                                                           task_producer_config.channel_banner_queue_name)
-    worker_video_preview = V1Worker(minio_uploader, task_video_preview_producer, task_avatar_producer,
-                                    task_channel_banner_producer, minio_uploader_config.bucket_name)
+    worker_video_preview = Worker(minio_uploader, task_video_preview_producer, task_avatar_producer,
+                                  task_channel_banner_producer, minio_uploader_config.bucket_name)
 
     task_video_preview_consumer = TaskGenerationConsumer(rabbit_consumer,
                                                          task_consumer_config.video_preview_queue_name,

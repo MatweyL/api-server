@@ -75,7 +75,7 @@ class TaskAvatarGenerationCRUD:
 
     @staticmethod
     async def create(task_schema: TaskAvatarGeneration, session: AsyncSession):
-        task = map_schema_to_model(task_schema, TaskAvatarGeneration)
+        task = map_schema_to_model(task_schema, TaskAvatarGenerationModel)
         session.add(task)
 
     @staticmethod

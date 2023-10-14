@@ -2,7 +2,6 @@ from server.adapters.outbound.s3_uploader.config import MinioUploaderConfig as S
 
 
 class MinioUploaderConfig(ServerMinioUploaderConfig):
-    bucket_name: str
 
     class Config:
         env_prefix = 'minio_ml_worker_'
