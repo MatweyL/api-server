@@ -5,7 +5,6 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from server.adapters.inbound.consumer.conifg import rabbit_consumer_config
-from server.adapters.inbound.consumer.mock import RabbitConsumerMock
 from server.adapters.inbound.consumer.rabbit import RabbitConsumer
 from server.adapters.outbound.producer.conifg import rabbit_producer_config
 from server.adapters.outbound.producer.rabbit import RabbitProducer
@@ -16,11 +15,11 @@ from server.domain.schemas import InputTaskVideoPreviewGeneration, InputTaskAvat
     InputTaskChannelBannerGeneration
 from server.domain.schemas.main import TaskGeneration, TaskVideoPreviewGeneration, TaskAvatarGeneration, \
     TaskChannelBannerGeneration
-from server.domain.services import TaskVideoPreviewGenerationService, TaskGenerationService, TaskGenerationFacade, \
+from server.domain.services.main import TaskVideoPreviewGenerationService, TaskGenerationService, TaskGenerationFacade, \
     TaskImageService
-from server.domain.services_mock import TaskGenerationServiceMock
-from server.domain.task_producer import TaskGenerationProducer
-from server.domain.task_updates_consumer import TaskGenerationUpdatesConsumer
+from server.domain.services.mock import TaskGenerationServiceMock
+from server.domain.tasks.task_producer import TaskGenerationProducer
+from server.domain.tasks.task_updates_consumer import TaskGenerationUpdatesConsumer
 
 router_tasks = APIRouter(prefix='/tasks')
 task_gs_mock = TaskGenerationServiceMock()

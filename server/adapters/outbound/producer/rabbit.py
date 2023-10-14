@@ -2,7 +2,7 @@ import asyncio
 from typing import Optional
 
 from aio_pika import Message, connect_robust
-from aio_pika.abc import AbstractExchange, AbstractConnection
+from aio_pika.abc import AbstractExchange, AbstractConnection, AbstractChannel, AbstractQueue
 
 from server.ports.outbound import RabbitProducerInterface
 from .utils import _build_connection_url
@@ -37,7 +37,7 @@ class RabbitProducer(RabbitProducerInterface):
             return await self.start()
         else:
             channel = await self._connection.channel()
-            self._exchange = await channel.declare_exchange(self._exchange_name, self._exchange_type)
+            self._exchange = await channel.declare_exchange(self._exchange_name, self._exchange_type, durable=True)
             logger.info(f'{self} started')
 
     async def stop(self):

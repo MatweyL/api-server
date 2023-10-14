@@ -11,5 +11,3 @@ class MinioUploaderConfig(BaseServiceConfig):
     class Config:
         env_prefix = 'minio_'
 
-
-minio_batch_uploader_config = MinioUploaderConfig()

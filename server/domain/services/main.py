@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from typing import Any, Dict, List
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -6,9 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from server.common.logs import logger
 from server.domain.cruds import TaskGenerationCRUD, TaskVideoPreviewGenerationCRUD, TaskImageCRUD
 from server.domain.schemas import TaskStatus, TaskType, TaskGeneration, \
-    InputTaskVideoPreviewGeneration, TaskVideoPreviewGeneration, TaskImage, InputTaskAvatarGeneration, \
-    TaskAvatarGeneration, TaskChannelBannerGeneration, InputTaskChannelBannerGeneration
-from server.domain.task_producer import AbstractTaskGenerationProducer
+    InputTaskVideoPreviewGeneration, TaskVideoPreviewGeneration, TaskImage
+from server.domain.tasks.task_producer import AbstractTaskGenerationProducer
 from server.domain.utils import generate_uid
 
 

@@ -45,15 +45,20 @@ class RabbitConsumer(RabbitConsumerInterface):
         logger.info(f'{self} stopped')
 
     def _processing_callback_bridge(self, processing_callback: Callable):
+
         async def inner(message: AbstractIncomingMessage):
             async with message.process():
                 message_str = message.body.decode('utf-8')
             logger.debug(f'{self} got message')
-            await processing_callback(message_str)
+            try:
+                await processing_callback(message_str)
+            except BaseException as e:
+                logger.exception(e)
+            logger.debug(f'{self} processed message')
 
         return inner
 
     async def consume_queue(self, queue_name: str, processing_callback: Callable):
-        queue = await self._channel.declare_queue(queue_name)
+        queue = await self._channel.declare_queue(queue_name, durable=True)
         await queue.consume(self._processing_callback_bridge(processing_callback))
         logger.info(f'{self} start consuming {queue_name}')

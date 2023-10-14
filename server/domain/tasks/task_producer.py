@@ -26,4 +26,5 @@ class TaskGenerationProducer(AbstractTaskGenerationProducer):
 
     async def produce(self, task: TaskGeneration):
         task_bytes = task.model_dump_json().encode('utf-8')
+
         await self._rabbit_producer.produce(task_bytes, task.task_uid, self._queue_name)

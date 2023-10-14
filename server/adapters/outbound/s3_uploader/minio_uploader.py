@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import asyncio
+import os
 from io import BytesIO
-from random import random
-from typing import Union
 
 import miniopy_async
 from miniopy_async import Minio
-from miniopy_async.helpers import MAX_PART_SIZE
+
+from server.adapters.outbound.s3_uploader.models import UploadingResponse
 
 try:
     from server.common.logs import logger
@@ -18,7 +18,7 @@ except ImportError:
     logger.warning('failed to import project logger; use default logging')
 
 
-class MinioBatchUploader:
+class MinioUploader:
 
     def __init__(self, host: str, user: str, password: str, max_retries: int, before_retry_timeout_s: int):
         self._host = host
@@ -31,7 +31,7 @@ class MinioBatchUploader:
         self._max_retries = max_retries
         self._before_retry_timeout_s = before_retry_timeout_s
 
-    async def upload(self, bucket_name: str, file_name: str, file: BytesIO) -> bool:
+    async def upload(self, bucket_name: str, file_name: str, file: BytesIO) -> UploadingResponse:
         is_saved = False
         retries = 0
         file_length = file.tell()
@@ -53,4 +53,5 @@ class MinioBatchUploader:
                 is_saved = True
         if not is_saved:
             logger.critical(f"data saving failed after {self._max_retries} retries")
-        return is_saved
+        return UploadingResponse(success=is_saved,
+                                 image_url=os.path.join(self._host, bucket_name, file_name))

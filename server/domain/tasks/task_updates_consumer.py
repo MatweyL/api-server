@@ -1,11 +1,11 @@
 from abc import abstractmethod
 
 from server.domain.schemas import TaskGeneration, TaskStatus
-from server.domain.services import TaskGenerationService, TaskImageService
+from server.domain.services.main import TaskGenerationService, TaskImageService
 from server.ports.inbound import RabbitConsumerInterface
 
 
-class AbstractTaskGenerationUpdatesConsumer:
+class AbstractTaskGenerationConsumer:
 
     def __init__(self,
                  rabbit_consumer: RabbitConsumerInterface,
@@ -18,20 +18,27 @@ class AbstractTaskGenerationUpdatesConsumer:
         pass
 
     @abstractmethod
-    async def setup(self):
+    async def _rabbit_consume_callback(self, task_raw: str):
         pass
 
+    async def setup(self):
+        await self._rabbit_consumer.consume_queue(self._queue_name,
+                                                  self._rabbit_consume_callback)
 
-class TaskGenerationUpdatesConsumerMock(AbstractTaskGenerationUpdatesConsumer):
+
+class TaskGenerationUpdatesConsumerMock(AbstractTaskGenerationConsumer):
 
     async def consume(self, task: TaskGeneration):
         pass
 
+    async def _rabbit_consume_callback(self, task_raw: str):
+        pass
+
     async def setup(self):
         pass
 
 
-class TaskGenerationUpdatesConsumer(AbstractTaskGenerationUpdatesConsumer):
+class TaskGenerationUpdatesConsumer(AbstractTaskGenerationConsumer):
 
     def __init__(self, rabbit_consumer: RabbitConsumerInterface, queue_name: str, task_gs: TaskGenerationService,
                  task_image_s: TaskImageService):
@@ -47,8 +54,3 @@ class TaskGenerationUpdatesConsumer(AbstractTaskGenerationUpdatesConsumer):
         await self._task_gs.update_status(task.task_uid, task.task_status)
         if task.task_status == TaskStatus.GENERATION_FINISHED:
             await self._task_image_s.create_all(task.task_images)
-
-    async def setup(self):
-        await self._rabbit_consumer.consume_queue(self._queue_name,
-                                                  self._rabbit_consume_callback)
-

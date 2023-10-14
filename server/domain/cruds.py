@@ -3,7 +3,7 @@ from typing import Optional, List
 from sqlalchemy import update, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from server.domain.mappers import map_schema_to_model, map_model_to_schema, map_model_with_existing_schema
+from server.domain.utils import map_schema_to_model, map_model_to_schema, map_model_with_existing_schema
 from server.domain.models import TaskGenerationModel, TaskVideoPreviewGenerationModel, TaskImageModel
 from server.domain.schemas import TaskStatus, TaskGeneration, TaskVideoPreviewGeneration, TaskImage
 
