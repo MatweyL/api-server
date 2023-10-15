@@ -39,10 +39,10 @@ class AbstractWorker(WorkerInterface):
         task.task_status = TaskStatus.GENERATION_RUNNING
         task_producer = self._task_type_producer[task.task_type]
         await task_producer.produce(task)
-        images_bytes: List[BytesIO] = self._task_type_generation_methods[task.task_type](task)
+        images_bytes: List[BytesIO] = await self._task_type_generation_methods[task.task_type](task)
         images = []
         for image_bytes in images_bytes:
-            image_uid = generate_uid()
+            image_uid = f'{generate_uid()}.jpg'
             uploading_response = await self._uploader.upload(self._bucket_name, image_uid, image_bytes)
             image = TaskImage(image_uid=image_uid,
                               image_url=uploading_response.image_url,
@@ -53,13 +53,13 @@ class AbstractWorker(WorkerInterface):
         await task_producer.produce(task)
 
     @abstractmethod
-    def generate_video_preview(self, task: TaskVideoPreviewGeneration) -> List[BytesIO]:
+    async def generate_video_preview(self, task: TaskVideoPreviewGeneration) -> List[BytesIO]:
         pass
 
     @abstractmethod
-    def generate_avatar(self, task: TaskAvatarGeneration) -> List[BytesIO]:
+    async def generate_avatar(self, task: TaskAvatarGeneration) -> List[BytesIO]:
         pass
 
     @abstractmethod
-    def generate_channel_banner(self, task: TaskChannelBannerGeneration) -> List[BytesIO]:
+    async def generate_channel_banner(self, task: TaskChannelBannerGeneration) -> List[BytesIO]:
         pass

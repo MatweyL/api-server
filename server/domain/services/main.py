@@ -149,6 +149,8 @@ class TaskGenerationFacade:
 
     async def get(self, task_uid: str) -> TaskGeneration:
         task_base = await self._task_gs.get(task_uid)
+        if not task_base:
+            return
         service = self._task_type_gs_map[task_base.task_type]
         task = await service.get(task_uid)
 

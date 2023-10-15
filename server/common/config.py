@@ -26,6 +26,10 @@ class DatabaseConfig(BaseServiceConfig):
         env_prefix = 'db_'
 
 
+class HostConfig(BaseServiceConfig):
+    server_url: str
+
+
 db_config = DatabaseConfig()
 log_config = LogConfig()
-
+host_config = HostConfig()

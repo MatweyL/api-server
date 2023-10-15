@@ -8,16 +8,15 @@ from server.domain.schemas import TaskVideoPreviewGeneration, TaskAvatarGenerati
 
 class Worker(AbstractWorker):
 
-    def generate_video_preview(self, task: TaskVideoPreviewGeneration) -> List[BytesIO]:
+    async def generate_video_preview(self, task: TaskVideoPreviewGeneration) -> List[BytesIO]:
         return [get_bytes_io()]
 
-    def generate_avatar(self, task: TaskAvatarGeneration) -> List[BytesIO]:
+    async def generate_avatar(self, task: TaskAvatarGeneration) -> List[BytesIO]:
         return [get_bytes_io()]
 
-    def generate_channel_banner(self, task: TaskChannelBannerGeneration) -> List[BytesIO]:
+    async def generate_channel_banner(self, task: TaskChannelBannerGeneration) -> List[BytesIO]:
         return [get_bytes_io()]
 
 
 def get_bytes_io():
-    with open(r'D:\Programming\hackatons\digital_sochi_2023\api_server\requirements.txt', 'rb') as txt_file:
-        return BytesIO(txt_file.read())
+    return BytesIO(b'mock')

@@ -34,11 +34,11 @@ class MinioUploader:
     async def upload(self, bucket_name: str, file_name: str, file: BytesIO) -> UploadingResponse:
         is_saved = False
         retries = 0
-        file_length = file.tell()
-        file.seek(0)
+        file_bytes = file.getvalue()
+        file_length = len(file_bytes)
         while not is_saved:
             try:
-                await self._client.put_object(bucket_name, file_name, file, file_length)
+                await self._client.put_object(bucket_name, file_name, BytesIO(file_bytes), file_length)
             except (miniopy_async.error.S3Error, BaseException) as e:
                 logger.exception(e)
                 if isinstance(e, miniopy_async.error.S3Error) and e.code == "NoSuchBucket":

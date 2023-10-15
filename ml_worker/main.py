@@ -4,7 +4,7 @@ from ml_worker.core.minio_uploader import minio_uploader_config
 from ml_worker.core.rabbit_consumer import rabbit_consumer_config
 from ml_worker.core.rabbit_producer import rabbit_producer_config
 from ml_worker.core.task_consumer import TaskGenerationConsumer
-from ml_worker.v0.worker import Worker
+from ml_worker.v1.worker import Worker
 from server.adapters.inbound.consumer.rabbit import RabbitConsumer
 from server.adapters.outbound.producer.rabbit import RabbitProducer
 from server.adapters.outbound.s3_uploader.minio_uploader import MinioUploader

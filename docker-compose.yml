@@ -9,8 +9,8 @@ services:
      - "9000:9000"
      - "9001:9001"
    environment:
-     MINIO_ACCESS_KEY: ${DC_MINIO_ACCESS_KEY}
-     MINIO_SECRET_KEY: ${DC_MINIO_SECRET_KEY}
+     MINIO_ACCESS_KEY: minio
+     MINIO_SECRET_KEY: minio123456789
    volumes:
      - minio-storage:/data
    healthcheck:
@@ -24,8 +24,8 @@ services:
    hostname: rabbitmq
    restart: always
    environment:
-     RABBITMQ_DEFAULT_USER: ${DC_RABBITMQ_DEFAULT_USER}
-     RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+     RABBITMQ_DEFAULT_USER: guest
+     RABBITMQ_DEFAULT_PASS: guest
      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
    volumes:
      - ./rabbitmq:/var/lib/rabbitmq
